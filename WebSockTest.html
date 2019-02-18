@@ -3,82 +3,71 @@
   <title>WebSocket Test</title>
   <script language="javascript" type="text/javascript">
 
-  var wsUri = "ws://localhost:8088";
-  var output;
+	var wsUri = "ws://localhost:8088";
+	var output;
 
-  function init()
-  {
-    output = document.getElementById("output");
-    testWebSocket();
-  }
+	function init(){
+		output = document.getElementById("output");
+		testWebSocket();
+	}
 
-  function testWebSocket()
-  {
-    websocket = new WebSocket(wsUri);
-    websocket.onopen = function(evt) { onOpen(evt) };
-    websocket.onclose = function(evt) { onClose(evt) };
-    websocket.onmessage = function(evt) { onMessage(evt) };
-    websocket.onerror = function(evt) { onError(evt) };
-  }
+	function testWebSocket(){
+		websocket = new WebSocket(wsUri);
+		websocket.onopen = function(evt) { onOpen(evt) };
+		websocket.onclose = function(evt) { onClose(evt) };
+		websocket.onmessage = function(evt) { onMessage(evt) };
+		websocket.onerror = function(evt) { onError(evt) };
+	}
 
-  function onOpen(evt)
-  {
-    writeToScreen("CONNECTED");
-    doSend("WEB SOCKET CONNECTED");
-  }
+	function onOpen(evt){
+		writeToScreen("CONNECTED");
+		doSend("WEB SOCKET CONNECTED");
+	}
   
-  //Play Function
-  function play(evt)
-  {
-    writeToScreen("PLAY");
-    doSend("Hello server");
-  }
+	//Play Function
+	function play(evt){
+		writeToScreen("PLAY");
+		doSend("Hello server");
+	}
   
-  //Pause Function
-  function pause(evt)
-  {
-    writeToScreen("PAUSE");
-    doSend("2");
-  }
+	//Pause Function
+	function pause(evt){
+		writeToScreen("PAUSE");
+		doSend("2");
+	}
   
-  //Stop Function
-  function stop(evt)
-  {
-    writeToScreen("STOP");
-    doSend("3");
-  }
+	//Stop Function
+	function stop(evt){
+		writeToScreen("STOP");
+		doSend("3");
+	}
 
-  function onClose(evt)
-  {
-    writeToScreen("DISCONNECTED");
-  }
+	function onClose(evt){
+		writeToScreen("DISCONNECTED");
+	}
 
-  function onMessage(evt)
-  {
-    writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
-    websocket.close();
-  }
+	function onMessage(evt){
+		writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+		websocket.close();
+	}
 
-  function onError(evt)
-  {
-    writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
-  }
+	function onError(evt){
+		writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+	}
 
-  function doSend(message)
-  {
-    writeToScreen("SENT: " + message);
-    websocket.send(message);
-  }
+	function doSend(message){
+		writeToScreen("SENT: " + message);
+		websocket.send(message);
+	}
 
-  function writeToScreen(message)
-  {
-    var pre = document.createElement("p");
-    pre.style.wordWrap = "break-word";
-    pre.innerHTML = message;
-    output.appendChild(pre);
-  }
+	function writeToScreen(message){
+		var pre = document.createElement("p");
+		pre.style.wordWrap = "break-word";
+		pre.innerHTML = message;
+		output.appendChild(pre);
+	}
 
-  window.addEventListener("load", init, false);
+	window.addEventListener("load", init, false);
 
   </script>
 
