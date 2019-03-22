@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using SuperWebSocket;
@@ -14,6 +16,13 @@ namespace WebSocketTest
 
         static void Main(string[] args)
         {
+            Console.Write("Enter Hololens Ip -> ");
+            hololensIP = Console.ReadLine();
+            Console.WriteLine("Hololens IP ::: " + hololensIP);
+
+            StartSharingService();
+            Console.CancelKeyPress += Console_CancelKeyPress;
+
             wsServer = new WebSocketServer();
             int port = 8088;
             wsServer.Setup(port);
@@ -181,11 +190,33 @@ namespace WebSocketTest
             }
         }
 
+        // Start Sharing Service
+        private static void StartSharingService()
+        {
+            string workingDirectory = Environment.CurrentDirectory;
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
+            Console.WriteLine("Starting Sharing Service");
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = projectDirectory + "\\SharingService.exe";
+            startInfo.Arguments = "-local";
+
+            try
+            {
+                Process.Start(startInfo);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         private static void WsServer_NewSessionConnected(WebSocketSession session)
         {
             Console.WriteLine("New Session Connected");
         }
 
+        // TCP Connection Code Snippet
         static void Connect(String server, int serverPort, String message, String cmd)
         {
             try
@@ -237,9 +268,23 @@ namespace WebSocketTest
             {
                 Console.WriteLine("SocketException: {0}", e);
             }
+        }
 
-            //Console.WriteLine("\n Press Enter to continue...");
-            //Console.Read();
+        // Cancel Key Press Event
+        static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            EndTask("SharingService");
+        }
+
+        // End Process of an EXE
+        static void EndTask(string taskname)
+        {
+            string processName = taskname.Replace(".exe", "");
+
+            foreach (Process process in Process.GetProcessesByName(processName))
+            {
+                process.Kill();
+            }
         }
     }
 }
