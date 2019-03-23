@@ -12,17 +12,46 @@ namespace WebSocketTest
         private static WebSocketServer wsServer;
         private static int initialConnPort = 9090;
         private static int currConnPort = 9090;
-        private static string hololensIP = "10.91.68.73";
+        //private static string hololensIP = "10.91.68.73";
+        private static string[] hololensIP;
 
         static void Main(string[] args)
         {
-            Console.Write("Enter Hololens Ip -> ");
-            hololensIP = Console.ReadLine();
-            Console.WriteLine("Hololens IP ::: " + hololensIP);
+            Console.Write("**** Welcome to S P A R T - Central Control Module ****");
 
             StartSharingService();
             Console.CancelKeyPress += Console_CancelKeyPress;
 
+            Console.Write("No of Hololens to Connect -> ");
+            int noOfDevices = Convert.ToInt32(Console.ReadLine());
+
+            if (noOfDevices > 0)
+            {
+                hololensIP = new string[noOfDevices];
+
+                for (int i = 0; i < noOfDevices; i++)
+                {
+                    Console.Write("Enter Hololens Ip -> ");
+                    hololensIP[i] = Console.ReadLine();
+                    Console.WriteLine("Hololens IP ::: " + hololensIP[i]);
+                }
+
+                wsServer = new WebSocketServer();
+                int port = 8088;
+                wsServer.Setup(port);
+                wsServer.NewSessionConnected += WsServer_NewSessionConnected;
+                wsServer.NewMessageReceived += WsServer_NewMessageReceived;
+                wsServer.NewDataReceived += WsServer_NewDataReceived;
+                wsServer.SessionClosed += WsServer_SessionClosed;
+                wsServer.Start();
+                Console.WriteLine("Server is running on port " + port + ". Press ENTER to exit....");
+                Console.ReadKey();
+            }
+            else {
+                // No Devices
+            } 
+
+            /*
             wsServer = new WebSocketServer();
             int port = 8088;
             wsServer.Setup(port);
@@ -33,6 +62,7 @@ namespace WebSocketTest
             wsServer.Start();
             Console.WriteLine("Server is running on port " + port + ". Press ENTER to exit....");
             Console.ReadKey();
+            */
         }
 
         private static void WsServer_SessionClosed(WebSocketSession session, SuperSocket.SocketBase.CloseReason value)
@@ -216,8 +246,20 @@ namespace WebSocketTest
             Console.WriteLine("New Session Connected");
         }
 
+        
+        static void Connect(String[] holoIP, int serverPort, String value, String cmd)
+        {
+            int n = holoIP.Length;
+            for (int i = 0; i < n; i++) {
+                Console.WriteLine(holoIP[i]);
+                Console.WriteLine("Connecting to Hololens - " + holoIP[i]) ;
+                TcpConnect(holoIP[i], serverPort, value, cmd);
+                Thread.Sleep(1000);
+            }
+        }
+        
         // TCP Connection Code Snippet
-        static void Connect(String server, int serverPort, String message, String cmd)
+        static void TcpConnect(String server, int serverPort, String message, String cmd)
         {
             try
             {
